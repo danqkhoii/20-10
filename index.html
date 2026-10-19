@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Chúc Mừng Ngày Phụ Nữ Việt Nam 20/10 💖</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: radial-gradient(circle at center, #2d0b28 0%, #1a0013 70%, #05020a 100%);
+            overflow: hidden;
+            margin: 0;
+            user-select: none;
+        }
+
+        .font-cursive {
+            font-family: 'Dancing Script', cursive;
+        }
+
+        #particleCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .envelope-wrapper {
+            perspective: 1000px;
+        }
+
+        .envelope {
+            position: relative;
+            width: 320px;
+            height: 220px;
+            background: #e11d48;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(225, 29, 72, 0.4);
+            cursor: pointer;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        @media (min-width: 640px) {
+            .envelope {
+                width: 420px;
+                height: 280px;
+            }
+        }
+
+        .envelope:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.7), 0 0 45px rgba(244, 63, 94, 0.6);
+        }
+
+        .envelope .flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 160px solid transparent;
+            border-right: 160px solid transparent;
+            border-top: 120px solid #f43f5e;
+            transform-origin: top;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 4;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+        }
+
+        @media (min-width: 640px) {
+            .envelope .flap {
+                border-left-width: 210px;
+                border-right-width: 210px;
+                border-top-width: 150px;
+            }
+        }
+
+        .envelope.open .flap {
+            transform: rotateX(180deg);
+            z-index: 1;
+        }
+
+        .envelope .pocket {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 160px solid #9f1239;
+            border-right: 160px solid #9f1239;
+            border-bottom: 110px solid #be123c;
+            border-top: 110px solid transparent;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+            z-index: 3;
+        }
+
+        @media (min-width: 640px) {
+            .envelope .pocket {
+                border-left-width: 210px;
+                border-right-width: 210px;
+                border-bottom-width: 140px;
+                border-top-width: 140px;
+            }
+        }
+
+        .letter {
+            position: absolute;
+            bottom: 10px;
+            left: 5%;
+            width: 90%;
+            height: 85%;
+            background: linear-gradient(135deg, #fffaf0 0%, #fff1f2 100%);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .envelope.open .letter {
+            transform: translateY(-120px) scale(1.05);
+            z-index: 5;
+        }
+
+        @media (min-width: 640px) {
+            .envelope.open .letter {
+                transform: translateY(-160px) scale(1.08);
+            }
+        }
+
+        .seal {
+            position: absolute;
+            top: 100px;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 54px;
+            height: 54px;
+            background: radial-gradient(circle, #fbbf24 0%, #d97706 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 24px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+            z-index: 5;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .envelope.open .seal {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.5);
+        }
+
+        @keyframes pulse-soft {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.06); }
+        }
+        .pulse-animation {
+            animation: pulse-soft 2s infinite ease-in-out;
+        }
+
+        #scene-container {
+            position: fixed;
+            inset: 0;
+            z-index: 10;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.8s ease;
+        }
+        #scene-container.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .card-3d {
+            position: absolute;
+            width: 130px;
+            min-height: 130px;
+            background: rgba(25, 12, 38, 0.85);
+            border: 1.5px solid rgba(236, 72, 153, 0.45);
+            border-radius: 14px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 600;
+            box-shadow: 0 0 15px rgba(236, 72, 153, 0.25);
+            backdrop-filter: blur(8px);
+            cursor: pointer;
+            will-change: transform, opacity;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .card-3d:hover {
+            border-color: rgba(244, 114, 182, 0.95);
+            box-shadow: 0 0 25px rgba(236, 72, 153, 0.7);
+        }
+
+        .modal-backdrop {
+            transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .modal-content {
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.35s ease;
+        }
+        .modal-open {
+            opacity: 1 !important;
+            pointer-events: auto !important;
+        }
+        .modal-open .modal-content {
+            transform: scale(1) translateY(0) !important;
+            opacity: 1 !important;
+        }
+        .modal-closed {
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+        .modal-closed .modal-content {
+            transform: scale(0.65) translateY(25px) !important;
+            opacity: 0 !important;
+        }
+
+        .click-heart {
+            position: fixed;
+            pointer-events: none;
+            animation: floatUpFade 1.2s forwards ease-out;
+            z-index: 9999;
+        }
+        @keyframes floatUpFade {
+            0% { opacity: 1; transform: translate(-50%, -50%) scale(0.6) rotate(0deg); }
+            100% { opacity: 0; transform: translate(-50%, -150px) scale(1.4) rotate(25deg); }
+        }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(244, 63, 94, 0.1); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(244, 63, 94, 0.4); border-radius: 10px; }
+    </style>
+</head>
+<body class="w-screen h-screen relative flex flex-col justify-between text-white overflow-hidden">
+
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- Tiêu đề nhỏ phía trên (Đã gỡ bỏ nút bật nhạc) -->
+    <header class="w-full max-w-4xl p-4 flex justify-start items-center z-30 mx-auto">
+        <div class="flex items-center space-x-2 text-pink-300">
+            <i class="fa-solid fa-heart text-pink-500 animate-pulse"></i>
+            <span class="text-sm font-semibold tracking-wider uppercase">10C3 - Trần Bình Trọng</span>
+        </div>
+    </header>
+
+    <main id="envelope-section" class="flex-1 flex flex-col items-center justify-center w-full px-4 z-20 relative transition-opacity duration-700">
+        <div class="text-center mb-6 space-y-2">
+            <h1 class="text-3xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-300 via-rose-300 to-purple-300 drop-shadow-md">
+                Happy Vietnamese Women's Day
+            </h1>
+            <p class="text-pink-200/80 text-sm sm:text-base font-medium">
+                Gửi đến người phụ nữ tuyệt vời nhất 🌸
+            </p>
+        </div>
+
+        <div class="envelope-wrapper my-4">
+            <div id="envelope" class="envelope pulse-animation">
+                <div class="flap"></div>
+                <div class="seal"><i class="fa-solid fa-heart text-red-700"></i></div>
+                <div class="letter">
+                    <div class="text-center">
+                        <i class="fa-solid fa-heart text-rose-500 text-3xl mb-1"></i>
+                        <p class="font-cursive text-lg text-rose-800 font-bold">Thư Chúc Mừng 20/10</p>
+                    </div>
+                </div>
+                <div class="pocket"></div>
+            </div>
+        </div>
+
+        <div id="hintText" class="mt-6 text-center text-pink-200 text-sm sm:text-base flex items-center space-x-2 bg-pink-950/60 px-5 py-2.5 rounded-full border border-pink-500/30 backdrop-blur-sm shadow-md animate-bounce cursor-pointer">
+            <i class="fa-solid fa-hand-pointer text-pink-400"></i>
+            <span>Chạm vào phong thư để mở quà! 💌</span>
+        </div>
+    </main>
+
+    <div id="scene-container">
+        <div id="scene" class="w-full h-full absolute inset-0 flex items-center justify-center"></div>
+        
+        <div class="absolute bottom-6 z-30 flex justify-center w-full px-4">
+            <a href="https://www.facebook.com/profile.php?id=61585908399801" target="_blank" class="bg-purple-950/90 hover:bg-purple-900 border border-pink-500/50 backdrop-blur-md text-pink-200 text-xs sm:text-sm px-6 py-3 rounded-full shadow-lg flex items-center gap-2.5 transition transform hover:scale-105 cursor-pointer">
+                <i class="fa-solid fa-graduation-cap text-pink-400 text-base"></i>
+                <span>Kỉ niệm gắn bó 7 tuần học ✨</span>
+            </a>
+        </div>
+    </div>
+
+    <div id="cardModal" class="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center p-4 z-50 opacity-0 pointer-events-none transition-opacity duration-500">
+        <div id="cardContainer" class="bg-gradient-to-b from-slate-900 via-pink-950 to-slate-900 border border-pink-500/30 text-pink-100 w-full max-w-lg rounded-2xl p-6 shadow-2xl relative transform scale-95 transition-transform duration-500 flex flex-col max-h-[85vh]">
+            <button id="closeModalBtn" class="absolute top-4 right-4 text-pink-300 hover:text-white bg-pink-900/40 w-8 h-8 rounded-full flex items-center justify-center transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="text-center pb-3 border-b border-pink-500/20 shrink-0">
+                <div class="inline-block p-2.5 bg-pink-500/10 rounded-full border border-pink-500/30 mb-1">
+                    <i class="fa-solid fa-crown text-xl text-amber-300"></i>
+                </div>
+                <h2 class="text-2xl font-cursive font-bold text-pink-200">
+                    Lời Chúc Ngày 20/10!
+                </h2>
+            </div>
+
+            <div class="my-3 overflow-y-auto custom-scrollbar flex-1 pr-2">
+                <div id="typewriter" class="text-sm sm:text-base leading-relaxed text-pink-100 font-medium whitespace-pre-line"></div>
+            </div>
+
+            <div class="pt-3 border-t border-pink-500/25 flex justify-between items-center gap-2 shrink-0">
+                <span class="text-xs text-pink-300/80 italic">Luôn rạng rỡ & hạnh phúc nhé! 🌹</span>
+                <button id="exploreSphereBtn" class="px-5 py-2.5 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 rounded-xl text-xs font-bold shadow-lg flex items-center space-x-2 transition cursor-pointer">
+                    <span>Khám phá Quả Cầu Kỷ Niệm 🔮</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="image-modal" class="modal-closed fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div id="modal-backdrop" class="modal-backdrop absolute inset-0 bg-black/80 backdrop-blur-md"></div>
+        <div class="modal-content relative z-10 bg-gradient-to-b from-purple-900/95 to-slate-950/95 border border-pink-500/50 rounded-2xl p-4 sm:p-6 max-w-md w-full shadow-2xl flex flex-col items-center">
+            <button id="close-img-btn" class="absolute top-3 right-3 text-white/80 hover:text-white bg-white/10 rounded-full w-8 h-8 flex items-center justify-center transition">✕</button>
+            <div class="w-full h-64 sm:h-80 rounded-xl overflow-hidden mb-4 bg-black/50 border border-pink-500/20">
+                <img id="modal-img" src="" alt="Photo" class="w-full h-full object-cover">
+            </div>
+            <p id="modal-text" class="text-white text-base sm:text-lg font-semibold text-center leading-relaxed"></p>
+            <button id="close-img-bottom" class="mt-4 px-6 py-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white text-sm font-semibold rounded-full shadow-lg transition">Đóng</button>
+        </div>
+    </div>
+
+    <!-- Nhạc nền (Tự động phát khi click mở thư và chạy lặp lại) -->
+    <audio id="bgMusic" loop preload="auto">
+        <source src="https://assets.mixkit.co/music/preview/mixkit-romantic-view-244.mp3" type="audio/mpeg">
+    </audio>
+
+    <script src="data.js"></script>
+
+    <script>
+        const envelope = document.getElementById('envelope');
+        const envelopeSection = document.getElementById('envelope-section');
+        const sceneContainer = document.getElementById('scene-container');
+        const cardModal = document.getElementById('cardModal');
+        const cardContainer = document.getElementById('cardContainer');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const exploreSphereBtn = document.getElementById('exploreSphereBtn');
+        const typewriterEl = document.getElementById('typewriter');
+        const hintText = document.getElementById('hintText');
+        const bgMusic = document.getElementById('bgMusic');
+
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        const particleTypes = ['🌸', '🌹', '✨', '💖', '⭐'];
+        class Particle {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = -20;
+                this.size = Math.random() * 16 + 10;
+                this.speedY = Math.random() * 1.5 + 0.8;
+                this.speedX = Math.random() * 1 - 0.5;
+                this.symbol = particleTypes[Math.floor(Math.random() * particleTypes.length)];
+                this.opacity = Math.random() * 0.7 + 0.3;
+            }
+            update() {
+                this.y += this.speedY;
+                this.x += Math.sin(this.y * 0.02) + this.speedX;
+                if (this.y > canvas.height + 20) this.reset();
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.opacity;
+                ctx.font = `${this.size}px serif`;
+                ctx.fillText(this.symbol, this.x, this.y);
+                ctx.restore();
+            }
+        }
+        for (let i = 0; i < 35; i++) {
+            const p = new Particle();
+            p.y = Math.random() * canvas.height;
+            particles.push(p);
+        }
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        function triggerFireworks() {
+            confetti({ particleCount: 150, spread: 80, origin: { y: 0.7 }, colors: ['#f43f5e', '#ec4899', '#fbbf24', '#ffffff'] });
+        }
+
+        function startTypewriter(text, element, speed = 35) {
+            element.innerHTML = '';
+            let index = 0;
+            function typeNext() {
+                if (index < text.length) {
+                    const char = text.charAt(index);
+                    element.innerHTML += (char === '\n') ? '<br>' : char;
+                    index++;
+                    setTimeout(typeNext, speed);
+                }
+            }
+            typeNext();
+        }
+
+        function openEnvelope() {
+            if (envelope.classList.contains('open')) return;
+            envelope.classList.remove('pulse-animation');
+            envelope.classList.add('open');
+            hintText.classList.add('opacity-0');
+
+            // Tự động phát nhạc ngay khi mở phong thư và không cho phép tắt
+            bgMusic.play().catch(err => console.log("Audio play error:", err));
+
+            setTimeout(() => { triggerFireworks(); }, 500);
+
+            setTimeout(() => {
+                cardModal.classList.remove('opacity-0', 'pointer-events-none');
+                cardContainer.classList.remove('scale-95');
+                cardContainer.classList.add('scale-100');
+                startTypewriter(typeof letterContent !== 'undefined' ? letterContent : "Chúc mừng 20/10!", typewriterEl, 30);
+            }, 1000);
+        }
+
+        envelope.addEventListener('click', openEnvelope);
+        hintText.addEventListener('click', openEnvelope);
+
+        exploreSphereBtn.addEventListener('click', () => {
+            cardModal.classList.add('opacity-0', 'pointer-events-none');
+            envelopeSection.style.opacity = '0';
+            setTimeout(() => {
+                envelopeSection.style.display = 'none';
+                sceneContainer.classList.add('active');
+            }, 500);
+        });
+
+        closeModalBtn.addEventListener('click', () => {
+            cardModal.classList.add('opacity-0', 'pointer-events-none');
+            setTimeout(() => {
+                envelope.classList.remove('open');
+                envelope.classList.add('pulse-animation');
+                hintText.classList.remove('opacity-0');
+            }, 400);
+        });
+
+        const scene = document.getElementById('scene');
+        const cards = [];
+        const radius = Math.min(window.innerWidth, window.innerHeight) * 0.38 || 220;
+        const total = wishData.length;
+
+        let rotationX = 0, rotationY = 0;
+        let velocityX = 0.001, velocityY = 0.002;
+        let isDragging = false, lastMouseX = 0, lastMouseY = 0;
+
+        wishData.forEach((data, i) => {
+            const card = document.createElement('div');
+            card.className = 'card-3d';
+            card.innerHTML = `
+                <div class="w-full h-14 rounded-md overflow-hidden mb-1.5 bg-pink-950/40 pointer-events-none">
+                    <img src="${data.image}" class="w-full h-full object-cover" loading="lazy">
+                </div>
+                <span class="pointer-events-none line-clamp-2">${data.text}</span>
+            `;
+
+            const phi = Math.acos(-1 + (2 * i + 1) / total);
+            const theta = Math.sqrt(total * Math.PI) * phi;
+            const x = radius * Math.cos(theta) * Math.sin(phi);
+            const y = radius * Math.sin(theta) * Math.sin(phi);
+            const z = radius * Math.cos(phi);
+
+            cards.push({ element: card, x, y, z });
+            scene.appendChild(card);
+
+            card.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openImageModal(data);
+            });
+        });
+
+        function updatePositions() {
+            if (!isDragging) {
+                rotationX += velocityX;
+                rotationY += velocityY;
+            }
+            const cosX = Math.cos(rotationX), sinX = Math.sin(rotationX);
+            const cosY = Math.cos(rotationY), sinY = Math.sin(rotationY);
+
+            cards.forEach(item => {
+                let x1 = item.x * cosY - item.z * sinY;
+                let z1 = item.z * cosY + item.x * sinY;
+                let y1 = item.y * cosX - z1 * sinX;
+                let z2 = z1 * cosX + item.y * sinX;
+
+                const scale = (z2 + radius * 2) / (radius * 2.5);
+                const alpha = Math.max(0.15, (z2 + radius) / (radius * 2));
+
+                item.element.style.transform = `translate3d(${x1}px, ${y1}px, ${z2}px) scale(${Math.max(0.4, scale)})`;
+                item.element.style.opacity = alpha;
+                item.element.style.zIndex = Math.round(z2 + radius);
+            });
+            requestAnimationFrame(updatePositions);
+        }
+        updatePositions();
+
+        window.addEventListener('pointerdown', (e) => {
+            isDragging = true;
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
+        });
+        window.addEventListener('pointermove', (e) => {
+            if (!isDragging) return;
+            const deltaX = e.clientX - lastMouseX;
+            const deltaY = e.clientY - lastMouseY;
+            velocityY = -deltaX * 0.003;
+            velocityX = -deltaY * 0.003;
+            rotationY += velocityY;
+            rotationX += velocityX;
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
+        });
+        window.addEventListener('pointerup', () => { isDragging = false; });
+
+        const imgModal = document.getElementById('image-modal');
+        const modalImg = document.getElementById('modal-img');
+        const modalText = document.getElementById('modal-text');
+        const backdrop = document.getElementById('modal-backdrop');
+        const closeImgBtn = document.getElementById('close-img-btn');
+        const closeImgBottom = document.getElementById('close-img-bottom');
+
+        function openImageModal(data) {
+            modalImg.src = data.image;
+            modalText.textContent = data.text;
+            imgModal.classList.remove('modal-closed');
+            imgModal.classList.add('modal-open');
+        }
+        function closeImageModal() {
+            imgModal.classList.remove('modal-open');
+            imgModal.classList.add('modal-closed');
+        }
+        backdrop.addEventListener('click', closeImageModal);
+        closeImgBtn.addEventListener('click', closeImageModal);
+        closeImgBottom.addEventListener('click', closeImageModal);
+
+        window.addEventListener('click', (e) => {
+            if (e.target.closest('button') || e.target.closest('.card-3d') || e.target.closest('#envelope')) return;
+            const heart = document.createElement('div');
+            heart.className = 'click-heart';
+            heart.textContent = ['💖', '🌸', '✨', '❤️'][Math.floor(Math.random() * 4)];
+            heart.style.left = `${e.clientX}px`;
+            heart.style.top = `${e.clientY}px`;
+            heart.style.fontSize = `${Math.random() * 12 + 18}px`;
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 1200);
+        });
+    </script>
+</body>
+</html>
